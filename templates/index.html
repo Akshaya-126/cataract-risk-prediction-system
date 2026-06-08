@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cataract Predictor</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(120deg, #1e3c72, #2a5298);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* LEFT PANEL */
+.left-panel {
+    width: 40%;
+    color: white;
+    padding: 50px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.left-panel h1 {
+    font-size: 34px;
+    margin-bottom: 15px;
+}
+
+.left-panel p {
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+/* RESULT DISPLAY */
+.prediction-msg {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.low { background: rgba(40,167,69,0.9); }
+.medium { background: rgba(255,193,7,0.9); color: black; }
+.high { background: rgba(220,53,69,0.9); }
+
+/* RIGHT PANEL */
+.right-panel {
+    width: 60%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* CARD */
+.card {
+    width: 380px;
+    padding: 25px;
+    border-radius: 15px;
+    backdrop-filter: blur(15px);
+    background: rgba(255,255,255,0.12);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    color: white;
+}
+
+.card h2 {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+/* LABELS */
+label {
+    font-size: 13px;
+    margin-top: 8px;
+    display: block;
+    font-weight: 500;
+}
+
+/* INPUTS */
+input, select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    border: none;
+}
+
+/* ✅ FIXED RADIO ALIGNMENT */
+.radio-group {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 10px;
+}
+
+.radio-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+}
+
+/* BUTTON */
+button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #00c6ff, #0072ff);
+    color: white;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<!-- LEFT PANEL -->
+<div class="left-panel">
+    <h1>Cataract Risk System</h1>
+
+    <p>
+        This system uses machine learning to predict cataract risk based on symptoms 
+        and medical history.
+    </p>
+
+    <p>
+        It analyzes vision issues, diabetes, lifestyle habits, and age to provide 
+        early detection support.
+    </p>
+
+    <p>
+        Early identification helps prevent severe vision problems and ensures timely care.
+    </p>
+
+    {% if result %}
+    <div class="prediction-msg {% if result == 'Low' %}low{% elif result == 'Medium' %}medium{% else %}high{% endif %}">
+        <strong>Hey 👋, your prediction result is here!</strong><br><br>
+
+        <strong>Risk Level:</strong> {{ result }} <br>
+        <strong>Reason:</strong> {{ reason }} <br>
+        <strong>Advice:</strong> {{ recommendation }}
+    </div>
+    {% endif %}
+</div>
+
+<!-- RIGHT PANEL -->
+<div class="right-panel">
+<div class="card">
+
+<h2>Check Your Risk</h2>
+
+<form method="POST">
+
+<label>Age</label>
+<input type="number" name="age" value="{{ request.form.age }}" required>
+
+<label>Blurred Vision</label>
+<div class="radio-group">
+<label class="radio-item">
+<input type="radio" name="blurred_vision" value="1"
+{% if request.form.get('blurred_vision') == '1' %}checked{% endif %}> Yes
+</label>
+
+<label class="radio-item">
+<input type="radio" name="blurred_vision" value="0"
+{% if request.form.get('blurred_vision') == '0' %}checked{% endif %}> No
+</label>
+</div>
+
+<label>Glare</label>
+<div class="radio-group">
+<label class="radio-item">
+<input type="radio" name="glare" value="1"
+{% if request.form.get('glare') == '1' %}checked{% endif %}> Yes
+</label>
+
+<label class="radio-item">
+<input type="radio" name="glare" value="0"
+{% if request.form.get('glare') == '0' %}checked{% endif %}> No
+</label>
+</div>
+
+<label>Night Vision Issues</label>
+<div class="radio-group">
+<label class="radio-item">
+<input type="radio" name="night_vision_issue" value="1"
+{% if request.form.get('night_vision_issue') == '1' %}checked{% endif %}> Yes
+</label>
+
+<label class="radio-item">
+<input type="radio" name="night_vision_issue" value="0"
+{% if request.form.get('night_vision_issue') == '0' %}checked{% endif %}> No
+</label>
+</div>
+
+<label>Smoking Status</label>
+<select name="smoking_status">
+<option {% if request.form.get('smoking_status') == 'Never' %}selected{% endif %}>Never</option>
+<option {% if request.form.get('smoking_status') == 'Former' %}selected{% endif %}>Former</option>
+<option {% if request.form.get('smoking_status') == 'Current' %}selected{% endif %}>Current</option>
+</select>
+
+<label>Family History</label>
+<select name="family_history">
+<option {% if request.form.get('family_history') == 'No' %}selected{% endif %}>No</option>
+<option {% if request.form.get('family_history') == 'Yes' %}selected{% endif %}>Yes</option>
+</select>
+
+<label>Diabetes</label>
+<select name="diabetes">
+<option {% if request.form.get('diabetes') == 'Non-diabetic' %}selected{% endif %}>Non-diabetic</option>
+<option {% if request.form.get('diabetes') == 'Diabetic' %}selected{% endif %}>Diabetic</option>
+</select>
+
+<button type="submit">Predict</button>
+
+</form>
+
+</div>
+</div>
+
+</body>
+</html>
